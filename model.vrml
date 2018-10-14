@@ -1,0 +1,75 @@
+#VRML V2.0 utf8
+
+Shape
+{
+  appearance Appearance
+  {
+    material DEF mat Material
+    {
+      diffuseColor 1 0 0
+    } # Material
+  } # Appearance
+  geometry Sphere
+  {
+  } # Sphere
+} # Shape
+
+DEF arrow Transform {
+    translation 0 1.4 0
+    scale 0.2 0.2 0.2
+    children [
+        Shape {
+            appearance Appearance {
+                material DEF arrowMat Material {
+                    diffuseColor 0.87 0.27 0.59
+                    transparency 0.1
+                }
+            }
+            geometry Cone {}
+        },
+        Transform {
+            translation 0 -1 0
+            scale 0.2 1 0.2
+            children [
+                Shape {
+                    appearance Appearance {
+                        material USE arrowMat
+                    }
+                    geometry Cylinder {}
+                }
+            ]
+        }
+    ]
+}
+
+DEF ts TouchSensor
+{
+} # TouchSensor
+
+DEF script Script
+{
+  directOutput TRUE
+    mustEvaluate TRUE
+
+    eventIn SFBool isActive
+    eventIn SFVec3f touchPosition
+    eventIn SFVec3f touchNormal
+    eventOut SFColor color_changed
+
+    eventOut SFColor arrowColor
+    eventOut SFVec3f arrowPosition
+    eventOut SFVec3f arrowRotation
+
+    field SFBool flag FALSE
+    exposedField SFBool foo FALSE
+
+    url "out\production\vrmlTest2\MainScript.class"
+}
+ROUTE ts.isActive TO script.isActive
+ROUTE ts.hitPoint_changed TO script.touchPosition
+ROUTE ts.hitNormal_changed TO script.touchNormal
+
+ROUTE script.arrowPosition TO arrow.translation
+ROUTE script.color_changed TO mat.set_diffuseColor
+ROUTE script.arrowColor TO arrowMat.set_diffuseColor
+ROUTE script.arrowRotation TO arrow.
