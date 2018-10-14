@@ -58,7 +58,7 @@ DEF script Script
 
     eventOut SFColor arrowColor
     eventOut SFVec3f arrowPosition
-    eventOut SFVec3f arrowRotation
+    eventOut SFRotation arrowRotation
 
     field SFBool flag FALSE
     exposedField SFBool foo FALSE
@@ -72,4 +72,4 @@ ROUTE ts.hitNormal_changed TO script.touchNormal
 ROUTE script.arrowPosition TO arrow.translation
 ROUTE script.color_changed TO mat.set_diffuseColor
 ROUTE script.arrowColor TO arrowMat.set_diffuseColor
-ROUTE script.arrowRotation TO arrow.
+ROUTE script.arrowRotation TO arrow.rotation
