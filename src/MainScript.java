@@ -1,10 +1,6 @@
 import vrml.field.*;
 
 public class MainScript extends vrml.node.Script {
-    private SFBool flag;
-    private SFColor color_changed;
-
-    private SFColor arrowColor;
     private SFVec3f touchPosition;
     private SFVec3f arrowPosition;
     private SFVec3f touchNormal;
@@ -13,13 +9,9 @@ public class MainScript extends vrml.node.Script {
 
     private static final SFVec3f defaultDirection = new SFVec3f(0, 1, 0);
 
-    private static final float OFFSET = 0.5f;
+    private static final float OFFSET = 0.1f;
 
     public void initialize() {
-        flag = (SFBool)getField("flag");
-        color_changed = (SFColor)getEventOut("color_changed");
-        arrowColor = (SFColor)getEventOut("arrowColor");
-
         touchPosition = (SFVec3f)getEventIn("touchPosition");
         touchNormal = (SFVec3f)getEventIn("touchNormal");
 
@@ -29,29 +21,15 @@ public class MainScript extends vrml.node.Script {
     }
 
     public void processEvent(vrml.Event event) {
-        if (event.getName().equals("isActive")) {
-            arrowPosition.setValue(touchPosition.getX() + touchNormal.getX() * OFFSET,
-                    touchPosition.getY() + touchNormal.getY() * OFFSET,
-                    touchPosition.getZ() + touchNormal.getZ() * OFFSET);
+        arrowPosition.setValue(
+                touchPosition.getX() + touchNormal.getX() * OFFSET,
+                touchPosition.getY() + touchNormal.getY() * OFFSET,
+                touchPosition.getZ() + touchNormal.getZ() * OFFSET);
 
-            System.out.println(touchNormal);
+        System.out.println(touchNormal);
 
-            arrowRotation.setValue(createRotation(defaultDirection, touchNormal));
-            System.out.println(arrowRotation);
-
-            ConstSFBool isActive = (ConstSFBool)event.getValue();
-            if (isActive.getValue()) {
-                if (!flag.getValue()) {
-                    flag.setValue(true);
-                    color_changed.setValue(0, 1, 0);
-                    arrowColor.setValue(0, 0, 1);
-                } else {
-                    flag.setValue(false);
-                    color_changed.setValue(1, 0, 0);
-                    arrowColor.setValue(0, 1, 1);
-                }
-            }
-        }
+        arrowRotation.setValue(createRotation(defaultDirection, touchNormal));
+        System.out.println(arrowRotation);
     }
 
     /**
@@ -128,20 +106,14 @@ public class MainScript extends vrml.node.Script {
      * @param angle угол
      * @return кватернион
      */
-    static SFRotation createRotation(SFVec3f axis, float angle) {
+    private static SFRotation createRotation(SFVec3f axis, float angle) {
         axis = normalized(axis);
 
-        /*float w = (float) Math.cos(angle / 2);
-        float x = (float) (axis.getX() * Math.sin(angle / 2));
-        float y = (float) (axis.getY() * Math.sin(angle / 2));
-        float z = (float) (axis.getZ() * Math.sin(angle / 2));*/
-
-        float w = angle;
         float x = axis.getX();
         float y = axis.getY();
         float z = axis.getZ();
 
-        return new SFRotation(x, y, z, w);
+        return new SFRotation(x, y, z, angle);
     }
 
     /**
@@ -150,6 +122,7 @@ public class MainScript extends vrml.node.Script {
      * @param b вектор к которому поворот
      * @return кваетрнион поворота
      */
+    @SuppressWarnings("SameParameterValue")
     private static SFRotation createRotation(SFVec3f a, SFVec3f b) {
         return createRotation(normalized(cross(a, b)), angleBetweenVectors(a, b));
     }
